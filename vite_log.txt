@@ -12,3 +12,7 @@ Port 5001 is in use, trying another one...
   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.19.208.1:[1m5002[22m/[39m
   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.22.48.1:[1m5002[22m/[39m
 [2m19:09:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/components/Logo.tsx[22m
+[2m19:41:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/components/Logo.tsx[22m
+[2m19:44:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m19:44:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m19:44:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
