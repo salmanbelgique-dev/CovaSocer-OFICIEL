@@ -16,3 +16,14 @@ Port 5001 is in use, trying another one...
 [2m19:44:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
 [2m19:44:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
 [2m19:44:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m22:10:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/App.tsx[22m
+[2m22:14:15[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[2m22:14:16[22m [36m[1m[vite][22m[39m server restarted.
+[2m22:29:58[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m22:29:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because vite config has changed
+[2m22:29:59[22m [36m[1m[vite][22m[39m server restarted.
+[2m23:08:54[22m [36m[1m[vite][22m[39m [32mvite.config.ts changed, restarting server...[39m
+[2m23:08:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because vite config has changed
+[2m23:08:54[22m [36m[1m[vite][22m[39m server restarted.
+[2m23:11:00[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[2m23:11:00[22m [36m[1m[vite][22m[39m server restarted.

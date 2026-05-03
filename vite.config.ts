@@ -6,7 +6,9 @@ function footballApiPlugin() {
   return {
     name: 'football-api',
     configureServer(server: any) {
-      server.middlewares.use('/api/matches', async (req: any, res: any) => {
+      // Fetch Matches
+      server.middlewares.use('/api/matches', async (req: any, res: any, next: any) => {
+        if (req.url !== '/' && req.url !== '') return next();
         try {
           const API_TOKEN = process.env.SPORTMONKS_API_TOKEN;
           const today = new Date().toISOString().split('T')[0];
@@ -61,7 +63,7 @@ function footballApiPlugin() {
                 name: (awayTeam?.name || 'TBD').toUpperCase(),
                 logo: awayTeam?.image_path || ''
               },
-              startTime: fixture.starting_at,
+              startTime: new Date(fixture.starting_at_timestamp * 1000).toISOString(),
               status: liveStates.includes(stateName) ? 'LIVE' :
                       finishedStates.includes(stateName) ? 'FINISHED' : 'UPCOMING',
               score: {
@@ -79,6 +81,77 @@ function footballApiPlugin() {
           res.statusCode = 500;
           res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify({ error: 'Failed to fetch matches' }));
+        }
+      });
+
+      // Fetch Livescores
+      server.middlewares.use('/api/livescores', async (req: any, res: any, next: any) => {
+        if (req.url !== '/' && req.url !== '') return next();
+        try {
+          const API_TOKEN = process.env.SPORTMONKS_API_TOKEN;
+          const response = await fetch(
+            `https://api.sportmonks.com/v3/football/livescores/inplay?api_token=${API_TOKEN}&include=participants;scores;periods;league.country;state`,
+            { method: 'GET' }
+          );
+          
+          const data = await response.json();
+
+          if (!data.data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify([]));
+            return;
+          }
+
+          const liveFixtures = Array.isArray(data.data) ? data.data : [data.data];
+          const liveStates = ['INPLAY_1ST_HALF', 'INPLAY_2ND_HALF', 'HT', 'INPLAY_ET', 'INPLAY_ET_2ND_HALF', 'PEN_BREAK', 'INPLAY_PENALTIES'];
+          const finishedStates = ['FT', 'AET', 'FT_PEN', 'CANCELLED', 'AWARDED', 'WALKOVER', 'ABANDONED'];
+
+          const matches = liveFixtures.map((fixture: any) => {
+            const homeTeam = fixture.participants?.find((p: any) => p.meta?.location === 'home');
+            const awayTeam = fixture.participants?.find((p: any) => p.meta?.location === 'away');
+            const homeScore = fixture.scores?.find((s: any) => s.description === 'CURRENT' && s.score?.participant === 'home');
+            const awayScore = fixture.scores?.find((s: any) => s.description === 'CURRENT' && s.score?.participant === 'away');
+            const stateName = fixture.state?.developer_name || '';
+
+            let currentMinute = null;
+            if (liveStates.includes(stateName) && stateName !== 'HT') {
+              const startTimestamp = fixture.starting_at_timestamp;
+              if (startTimestamp) {
+                const nowSec = Math.floor(Date.now() / 1000);
+                let elapsedMin = Math.floor((nowSec - startTimestamp) / 60) + 1;
+                if (stateName === 'INPLAY_1ST_HALF') elapsedMin = Math.min(elapsedMin, 50);
+                else if (stateName === 'INPLAY_2ND_HALF') {
+                  elapsedMin = Math.max(elapsedMin - 15, 46);
+                  elapsedMin = Math.min(elapsedMin, 105);
+                }
+                currentMinute = Math.max(1, Math.min(elapsedMin, 120));
+              }
+            } else if (stateName === 'HT') {
+              currentMinute = 45;
+            }
+
+            return {
+              id: fixture.id.toString(),
+              league: (fixture.league?.name || 'UNKNOWN').toUpperCase(),
+              leagueId: fixture.league_id,
+              country: (fixture.league?.country?.name || '').toUpperCase(),
+              homeTeam: { name: (homeTeam?.name || 'TBD').toUpperCase(), logo: homeTeam?.image_path || '' },
+              awayTeam: { name: (awayTeam?.name || 'TBD').toUpperCase(), logo: awayTeam?.image_path || '' },
+              startTime: new Date(fixture.starting_at_timestamp * 1000).toISOString(),
+              status: liveStates.includes(stateName) ? 'LIVE' : finishedStates.includes(stateName) ? 'FINISHED' : 'UPCOMING',
+              score: { home: homeScore?.score?.goals ?? 0, away: awayScore?.score?.goals ?? 0 },
+              minute: currentMinute,
+              stateName: stateName
+            };
+          });
+
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify(matches));
+        } catch (error) {
+          console.error('Error fetching livescores:', error);
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'Failed to fetch livescores' }));
         }
       });
     }

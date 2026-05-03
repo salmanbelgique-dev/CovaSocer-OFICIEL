@@ -124,7 +124,7 @@ const App: React.FC = () => {
   const filteredMatches = matches.filter(match => {
     const isFinished = match.status === 'finished';
     if (activeFilter === 'finished') return isFinished;
-    if (activeFilter === 'all') return !isFinished;
+    if (activeFilter === 'all') return true;
     if (activeFilter === 'live') return match.status === 'live';
     if (activeFilter === 'international') {
       const leagueUpper = match.league.toUpperCase();
